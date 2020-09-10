@@ -30,20 +30,26 @@
           <li
             class="nav-item"
             [routerLinkActive]="['link-active']"
+            
+          >
+            <a class="nav-link text-dark" (click) = "auth.login()" *ngIf="!auth.loggedIn">Login</a>
+            <a class="nav-link text-dark" (click) = "auth.logout()" *ngIf="auth.loggedIn">Logout</a>
+          </li>
+          <li
+            class="nav-item"
+            [routerLinkActive]="['link-active']"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            <a class="nav-link text-dark" [routerLink]="['/vehicles']">Vehicle List</a>
+          </li>
+          <li
+            class="nav-item"
+            [routerLinkActive]="['link-active']"
             [routerLinkActiveOptions]="{ exact: true }"
           >
             <a class="nav-link text-dark" [routerLink]="['/vehicle/new']">New Vehicle</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']"
-              >Counter</a
-            >
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']"
-              >Fetch data</a
-            >
-          </li>
+
         </ul>
       </div>
     </div>

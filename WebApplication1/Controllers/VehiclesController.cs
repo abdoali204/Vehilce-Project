@@ -7,6 +7,8 @@ using WebApplication1.Core.Models;
 using WebApplication1.Core;
 using WebApplication1.Resources;
 using WebApplication1.Presistence;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication1.Controllers
 {
@@ -24,9 +26,10 @@ namespace WebApplication1.Controllers
             this.unitOfWork = unitOfWork;
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateVehicle([FromBody] SaveVehicleResource vehicleResource)
         {
-            if (!ModelState.IsValid)
+            if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var vehicle = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource);
@@ -42,7 +45,8 @@ namespace WebApplication1.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}")] 
+    [HttpPut("{id}")] 
+    [Authorize]
     public async Task<IActionResult> UpdateVehicle(int id, [FromBody] SaveVehicleResource vehicleResource)
     {
         if (!ModelState.IsValid)
@@ -63,6 +67,7 @@ namespace WebApplication1.Controllers
         return Ok(result);
     }
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteVehicle(int id)
     {
         if(!ModelState.IsValid)
@@ -86,5 +91,13 @@ namespace WebApplication1.Controllers
         var vehicleResource = Mapper.Map<Vehicle,VehicleResource>(vehicle);
         return Ok(vehicleResource);       
     }
+    [HttpGet]
+    public async Task<QueryResultResource<VehicleResource>> GetVehicles(VehicleQueryResource filterResource)
+    {
+        var filter = mapper.Map<VehicleQueryResource,VehicleQuery>(filterResource);
+        var queryResult = await repositry.GetVehicles(filter);
+        return mapper.Map<QueryResult<Vehicle>,QueryResultResource<VehicleResource>>(queryResult);
+         
+    }    
     }
 }

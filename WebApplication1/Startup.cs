@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -7,8 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebApplication1.Core;
+using WebApplication1.Core.Models;
 using WebApplication1.Presistence;
-
+using WebApplication1.Controllers;
 namespace WebApplication1
 {
     public class Startup
@@ -16,6 +18,7 @@ namespace WebApplication1
         public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration)
         {
             Configuration = configuration;
+           
         }
 
         public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
@@ -23,8 +26,23 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPhotoRepository,PhotoRepository>();
+            services.AddTransient<IPhotoService,PhotoService>();
+            services.Configure<PhotoSettings>(Configuration.GetSection("PhotoSettings"));
             services.AddAutoMapper();
-            services.AddControllersWithViews();
+
+
+            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = "https://vegacourse.us.auth0.com/";
+                options.Audience = "https://api.vega.com";
+            });
+
             services.AddScoped<IVehicleRepository, VehicleRepositry>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<VegaDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
@@ -33,6 +51,9 @@ namespace WebApplication1
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,8 +74,9 @@ namespace WebApplication1
                 app.UseSpaStaticFiles();
             }
 
+            app.UseAuthentication();
             app.UseRouting();
-
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

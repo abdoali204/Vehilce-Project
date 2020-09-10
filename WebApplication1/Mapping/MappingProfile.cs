@@ -13,6 +13,8 @@ namespace WebApplication1.Mapping
         public MappingProfile()
         {
             // Domain to API Resource
+            CreateMap<Photo,PhotoResource>();
+            CreateMap(typeof(QueryResult<>),typeof(QueryResultResource<>));
             CreateMap<Make, MakeResource>();
             CreateMap<Make,KeyValuePairResource>();
             CreateMap<Model, KeyValuePairResource>();
@@ -25,6 +27,7 @@ namespace WebApplication1.Mapping
               .ForMember(vr => vr.Features, opt => opt.MapFrom(v => v.Features.Select(vf => new KeyValuePairResource{Id = vf.Feature.Id , Name = vf.Feature.Name})))
               .ForMember(vr => vr.Make,opt => opt.MapFrom(v=> v.Model.Make));
             // API Resource to Domain
+            CreateMap<VehicleQueryResource, VehicleQuery>();
             CreateMap<SaveVehicleResource, Vehicle>()
               .ForMember(v => v.Id, opt => opt.Ignore())
               .ForMember(v => v.ConcatName, opt => opt.MapFrom(vr => vr.Contact.Name))

@@ -1,0 +1,48 @@
+<p>
+  vehicle-list works!
+</p>
+<h2>Vehicles</h2>
+<p *ngIf="auth.loggedIn">
+  <a class = 'btn btn-primary' [routerLink]="['/vehicles/new']">New Vehicle</a>
+</p>
+<div class="well">
+  <div class="form-group">
+    <label for="make">Make</label>
+    <select id="make" [(ngModel)]="query.makeId"  (change) ="onFilterChange()" name="make">
+      <option value=""></option>
+      <option *ngFor="let m of makes" value="{{m.id}}"> {{m.name}}</option>
+    </select>
+  </div>
+  <div class="btn btn-default" (click)= "resetFilters()">Reset filters</div>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th *ngFor="let c of columns" >
+        <div *ngIf="c.isSortable" (click)="sortBy(c.key)">
+          {{c.title}}
+            <i *ngIf="query.sortBy === c.key" 
+              class="fa"
+              [class.fa-sort-asc] = "query.isSortAscending"
+              [class.fa-sort-desc] = "!query.isSortAscending"
+            >
+            </i>
+        </div>
+        <div *ngIf="!c.isSortable">
+          {{c.title}}
+        </div>
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let vehicle of queryResult.items">
+        <td>{{vehicle.id}}</td>
+        <td>{{vehicle.make.name}}</td>
+        <td>{{vehicle.model.name}}</td>
+        <td>{{vehicle.contact.name}}</td>
+        <td><a [routerLink]="['/vehicles/'+ vehicle.id]">View</a></td>
+    </tr>
+  </tbody>
+</table>
+<pagination [total-items]= "queryResult.totalItems" [page-size]= "query.pageSize" (page-changed) = "onPageChange($event)"></pagination>

@@ -19,7 +19,7 @@ namespace WebApplication1.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("WebApplication1.Models.Feature", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Feature", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Features");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Make", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Make", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Makes");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Model", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Model", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,29 @@ namespace WebApplication1.Migrations
                     b.ToTable("Model");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Vehicle", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.Property<int?>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Photos");
+                });
+
+            modelBuilder.Entity("WebApplication1.Core.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +134,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.VehicleFeature", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.VehicleFeature", b =>
                 {
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -127,33 +149,40 @@ namespace WebApplication1.Migrations
                     b.ToTable("VehicleFeatures");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Model", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Model", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Make", "Make")
+                    b.HasOne("WebApplication1.Core.Models.Make", "Make")
                         .WithMany("Models")
                         .HasForeignKey("MakeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Vehicle", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.Photo", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Model", "Model")
+                    b.HasOne("WebApplication1.Core.Models.Vehicle", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("VehicleId");
+                });
+
+            modelBuilder.Entity("WebApplication1.Core.Models.Vehicle", b =>
+                {
+                    b.HasOne("WebApplication1.Core.Models.Model", "Model")
                         .WithMany()
                         .HasForeignKey("ModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.VehicleFeature", b =>
+            modelBuilder.Entity("WebApplication1.Core.Models.VehicleFeature", b =>
                 {
-                    b.HasOne("WebApplication1.Models.Feature", "Feature")
+                    b.HasOne("WebApplication1.Core.Models.Feature", "Feature")
                         .WithMany()
                         .HasForeignKey("FeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Models.Vehicle", "Vehilce")
+                    b.HasOne("WebApplication1.Core.Models.Vehicle", "Vehilce")
                         .WithMany("Features")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
